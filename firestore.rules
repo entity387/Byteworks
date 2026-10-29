@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function approved() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/approvedDevices/$(request.auth.uid))
+        && get(/databases/$(database)/documents/approvedDevices/$(request.auth.uid)).data.enabled == true;
+    }
+    // The browser cannot approve itself or other devices.
+    // Create or revoke these documents manually in Firebase Console.
+    match /approvedDevices/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow list, create, update, delete: if false;
+    }
+    match /workspaces/main {
+      allow read: if approved();
+      allow create: if approved()
+        && request.resource.data.keys().hasOnly(['revision', 'data', 'updatedAt', 'updatedBy'])
+        && request.resource.data.revision == 0
+        && request.resource.data.updatedBy == request.auth.uid;
+      allow update: if approved()
+        && request.resource.data.keys().hasOnly(['revision', 'data', 'updatedAt', 'updatedBy'])
+        && request.resource.data.revision == resource.data.revision + 1
+        && request.resource.data.updatedBy == request.auth.uid;
+      allow delete: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
