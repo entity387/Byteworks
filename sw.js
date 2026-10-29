@@ -1,0 +1,7 @@
+const CACHE='bw-shell-v2.3.0';const SHELL=['/','/index.html','/app.js','/firebase-sync.js','/manifest.webmanifest','/icons/icon-192.png','/icons/icon-512.png'];
+self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()))});
+self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+self.addEventListener('fetch',event=>{const req=event.request;if(req.method!=='GET'||new URL(req.url).origin!==self.location.origin)return;event.respondWith(fetch(req).then(res=>{if(res.ok&&SHELL.includes(new URL(req.url).pathname)){const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy))}return res}).catch(()=>caches.match(req).then(cached=>cached||Response.error()))) });
+self.addEventListener('notificationclick',event=>{event.notification.close();event.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(wins=>{const win=wins.find(w=>new URL(w.url).origin===self.location.origin);return win?win.focus():clients.openWindow('/') }))});
+// A future push sender can target this handler once subscriptions and a secure backend are implemented.
+self.addEventListener('push',event=>{if(!event.data)return;let p;try{p=event.data.json()}catch{p={body:event.data.text()}};event.waitUntil(self.registration.showNotification(p.title||'ByteWorks Hub',{body:p.body||'Workshop update',icon:'/icons/icon-192.png',tag:p.tag||'bw-push'}))});

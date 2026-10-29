@@ -31,7 +31,7 @@ async function startApproved(){
   // Existing browser data is NOT automatically sent to the cloud.
   const first=await getDoc(workshop);
   if(!first.exists()){
-   const empty={jobs:[],customers:[],appointments:[],payments:[],receipts:[],activities:[],settings:{businessName:'ByteWorks',location:'Mount Eliza, Victoria',receiptFooter:'Thank you for choosing us.',reminders:true},seq:1};
+   const empty={jobs:[],customers:[],appointments:[],payments:[],receipts:[],parts:[],activities:[],settings:{businessName:'ByteWorks',location:'Mount Eliza, Victoria',receiptFooter:'Thank you for choosing us.',reminders:true},seq:1};
    await runTransaction(firestore,async t=>{const snapshot=await t.get(workshop);if(!snapshot.exists())t.set(workshop,{revision:0,data:empty,updatedAt:new Date().toISOString(),updatedBy:deviceId})});
   }
   remoteUnsub=onSnapshot(workshop,(snap)=>{
