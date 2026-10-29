@@ -1,19 +1,10 @@
-# ByteWorks Hub V2.8 · Minimal digital intake
+# ByteWorks Hub V2.8.1 Startup Fix
 
-This update keeps the V2.7 Firebase configuration, approved-device setup, parts logistics, receipts, appointments and PWA install support.
+This fixes stale installable-app caches and makes JavaScript startup problems visible instead of leaving a blank screen. The Firebase configuration, data schema, signatures, and rules are unchanged.
 
-## Intake form
-1. Open an existing job and choose **Intake form**, or go to **Intake Forms → New intake form**.
-2. Confirm the selected job, customer name, device condition and accessories.
-3. Show the customer the clearly separated Australian Consumer Law repair notice **before accepting their device**. The notice includes the prescribed refurbished goods/parts text; review your actual refurbishment practices.
-4. The customer checks acknowledgement and signs on the screen with a finger or mouse. Press **Save signed form**.
-5. Use **Print / Save PDF** to provide the customer a copy (print, or securely send the generated PDF). Viewing the notice only on your device is not sufficient to meet the obligation to give it to the consumer.
+1. **Back up your records** from the last working deployment before updating.
+2. Replace ALL files in the same Vercel project. Keep `index.html`, `app.js`, `firebase-sync.js`, `sw.js`, `manifest.webmanifest` and the `icons` folder at the deployment root.
+3. Open the site in a browser and press Ctrl+Shift+R (on phone, close/reopen the app). The updated service worker uses cache version `bw-shell-v2.8.1`.
+4. If it still fails, test the site in a fresh private tab and share the exact visible error or DevTools Console error. A private browser may require reauthorising a new Firebase anonymous UID.
 
-There is NO waiting-for-signature job status. Each submitted signed form is stored in the shared ByteWorks data and linked to a Job ID. Previously signed versions are retained. Reopening a job does not change past signed approvals.
-
-## Important deployment and storage notes
-- Back up your current data as JSON before deploying. Update the files in your Vercel project, keeping the package directory structure.
-- This uses the existing single Firestore shared document. Base64 signature images increase its size; Firestore documents have a 1 MiB limit. Move signed forms to a separate document collection or secure object storage before accumulating many real signatures. Do not use this version for large volumes of real customer forms without that change.
-- Authentication remains based on your current anonymous device-approval workflow. Keep Firestore security rules restrictive. Test with fictional customer information first.
-- The PDF copy is produced with the browser's Print → Save as PDF workflow; there is no automatic customer email delivery.
-- Digital intake forms are not payment receipts. Consumer rights cannot be excluded by an intake signature.
+This is a compatibility/startup patch, not proof the Firebase configuration or deployed site is operational. Customer forms should be tested using fictional information first. Signed forms still live in the single shared Firestore document and can hit the 1 MiB document size limit; migrate to separate documents before routine real customer signatures.

@@ -164,7 +164,7 @@ async function installByteWorks(){
  notify('Use your browser menu → Install app (on iPhone: Share → Add to Home Screen).');
 }
 if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')){
- window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(e=>console.warn('PWA service worker:',e)));
+ window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js?v=2.8.1', {updateViaCache:'none'}).catch(e=>console.warn('PWA service worker:',e)));
 }
 const BW_NOTIF_PREF='byteworks_browser_notifications_v1';
 async function enableWorkshopReminders(){
